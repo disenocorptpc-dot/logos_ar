@@ -36,9 +36,9 @@
     </div>
 
     <!-- Escena AR -->
-    <!-- Nota: Estamos usando un target de ejemplo (card.mind). En producción compilarás el tuyo. -->
+    <!-- Nota: Coloca el archivo targets.mind generado en esta misma carpeta -->
     <a-scene 
-        mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.mind; filterMinCF:0.0001; filterBeta: 0.001;" 
+        mindar-image="imageTargetSrc: ./targets.mind; filterMinCF:0.0001; filterBeta: 0.001;" 
         color-space="sRGB" 
         renderer="colorManagement: true, physicallyCorrectLights" 
         vr-mode-ui="enabled: false" 
