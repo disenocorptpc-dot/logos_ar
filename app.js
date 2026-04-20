@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // --- Referencias UI y DOM ---
     const logoUpload = document.getElementById('logo-upload');
     const scaleSlider = document.getElementById('scale-slider');
     const sizeLabel = document.getElementById('size-label');
+    const bgRemoverSelect = document.getElementById('bg-remover');
     
     // --- Referencias A-Frame ---
     const logoWrapper = document.getElementById('logo-wrapper');
@@ -10,11 +10,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Variables de Estado ---
     const markerSizeSelect = document.getElementById('marker-size');
+    let currentUploadedImageObj = null;
     
     // Proporciones iniciales del objeto (A-Frame units)
     let currentPlaneWidth = 1.0;
     let currentPlaneHeight = 1.0;
     let currentScale = 1.0;
+
+    /**
+     * Procesa la imagen para remover el fondo
+     */
+    function applyBackgroundRemoval(imageObj, removalType) {
+        const canvas = document.createElement('canvas');
+        canvas.width = imageObj.width;
+        canvas.height = imageObj.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(imageObj, 0, 0);
+
+        if (removalType !== 'none') {
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i+1], b = data[i+2];
+                if (removalType === 'remove-white' && r > 230 && g > 230 && b > 230) {
+                    data[i+3] = 0; // Transparent
+                } else if (removalType === 'remove-black' && r < 35 && g < 35 && b < 35) {
+                    data[i+3] = 0; // Transparent
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+        return canvas.toDataURL('image/png');
+    }
+
+    function processAndApplyImage() {
+        if (!currentUploadedImageObj) return;
+        const processedDataUrl = applyBackgroundRemoval(currentUploadedImageObj, bgRemoverSelect.value);
+        logoPlane.setAttribute('material', 'transparent: true;');
+        logoPlane.setAttribute('src', processedDataUrl);
+    }
+    
+    bgRemoverSelect.addEventListener('change', () => {
+        if (currentUploadedImageObj) processAndApplyImage();
+    });
 
     /**
      * Calcula e imprime el tamaño real del logo que se fabricará.
@@ -48,11 +86,10 @@ document.addEventListener("DOMContentLoaded", () => {
         reader.onload = (event) => {
             const imgDataUrl = event.target.result;
             
-            // Crear objeto de imagen temporal para leer sus dimensiones proporcionales
-            const tempImg = new Image();
-            tempImg.onload = () => {
-                const imgWidth = tempImg.width;
-                const imgHeight = tempImg.height;
+            currentUploadedImageObj = new Image();
+            currentUploadedImageObj.onload = () => {
+                const imgWidth = currentUploadedImageObj.width;
+                const imgHeight = currentUploadedImageObj.height;
                 const aspect = imgWidth / imgHeight;
 
                 // Normalizamos para que el lado más largo mida 1 unidad en A-Frame
@@ -67,18 +104,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Ajustar las dimensiones del plano en A-Frame
                 logoPlane.setAttribute('width', currentPlaneWidth);
                 logoPlane.setAttribute('height', currentPlaneHeight);
-                
-                // Aplicar la textura (quitar el color sólido y poner el src)
                 logoPlane.removeAttribute('color');
-                logoPlane.setAttribute('src', imgDataUrl);
                 
-                // Quitar transparencia forzada (solo mantenemos transparent:true por el PNG)
-                logoPlane.setAttribute('material', 'transparent: true;');
-
-                // Recalcular dimensiones
+                processAndApplyImage();
                 updateRealWorldDimensions();
             };
-            tempImg.src = imgDataUrl;
+            currentUploadedImageObj.src = imgDataUrl;
         };
         reader.readAsDataURL(file);
     });
@@ -107,6 +138,11 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, cx, cy, video.videoWidth * ratio, video.videoHeight * ratio);
 
         // 2. Dibujar la capa 3D (AR overlay)
+        // TRUCO: Forzamos un render sincrónico del motor WebGL para que el canvas no se pinte negro
+        const scene = document.querySelector('a-scene');
+        if(scene && scene.renderer) {
+            scene.renderer.render(scene.object3D, scene.camera);
+        }
         ctx.drawImage(arCanvas, 0, 0);
 
         // 3. Imprimir el texto de la medida
