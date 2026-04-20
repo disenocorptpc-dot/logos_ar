@@ -72,9 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 logoPlane.removeAttribute('color');
                 logoPlane.setAttribute('src', imgDataUrl);
                 
-                // Quitar transparencia de prueba si es necesario (el png transparente se renderizará bien con A-Frame por defecto
-                // pero aseguramos con material="transparent: true")
-                logoPlane.setAttribute('material', 'transparent: true; alphaTest: 0.5');
+                // Quitar transparencia forzada (solo mantenemos transparent:true por el PNG)
+                logoPlane.setAttribute('material', 'transparent: true;');
 
                 // Recalcular dimensiones
                 updateRealWorldDimensions();
@@ -82,6 +81,54 @@ document.addEventListener("DOMContentLoaded", () => {
             tempImg.src = imgDataUrl;
         };
         reader.readAsDataURL(file);
+    });
+
+    /**
+     * Toma una foto (Screenshot) combinando el feed de cámara, el modelo 3D y el texto del UI
+     */
+    const screenshotBtn = document.getElementById('screenshot-btn');
+    screenshotBtn.addEventListener('click', () => {
+        const video = document.querySelector('video');
+        const arCanvas = document.querySelector('.a-canvas');
+        if (!video || !arCanvas) return;
+
+        // Crear canvas en memoria
+        const captureCanvas = document.createElement('canvas');
+        captureCanvas.width = arCanvas.width;
+        captureCanvas.height = arCanvas.height;
+        const ctx = captureCanvas.getContext('2d');
+
+        // 1. Dibujar el video de la cámara ajustado (Object-fit: cover)
+        const vRatio = captureCanvas.width / video.videoWidth;
+        const hRatio = captureCanvas.height / video.videoHeight;
+        const ratio  = Math.max(vRatio, hRatio);
+        const cx = (captureCanvas.width - video.videoWidth * ratio) / 2;
+        const cy = (captureCanvas.height - video.videoHeight * ratio) / 2;
+        ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, cx, cy, video.videoWidth * ratio, video.videoHeight * ratio);
+
+        // 2. Dibujar la capa 3D (AR overlay)
+        ctx.drawImage(arCanvas, 0, 0);
+
+        // 3. Imprimir el texto de la medida
+        ctx.font = "bold 60px sans-serif";
+        ctx.fillStyle = "#34D399";
+        const sizeText = document.getElementById('size-label').textContent;
+        const textWidth = ctx.measureText(sizeText).width;
+        
+        ctx.shadowColor = "rgba(0,0,0,0.8)";
+        ctx.shadowBlur = 15;
+        ctx.shadowOffsetX = 4;
+        ctx.shadowOffsetY = 4;
+        
+        // Colocamos el texto abajo en la foto
+        ctx.fillText(sizeText, (captureCanvas.width - textWidth) / 2, captureCanvas.height - 100);
+
+        // Descargar la imagen
+        const dataUrl = captureCanvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'AR_Proyeccion_Escala.png';
+        link.href = dataUrl;
+        link.click();
     });
 
     // --- Listeners de Interacción ---

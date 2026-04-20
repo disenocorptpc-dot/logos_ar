@@ -12,31 +12,35 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Interfaz de Usuario -->
     <div id="ui-container">
-        <!-- Calculadora de Tamaño -->
-        <div class="glass-panel top-panel">
-            <h1>Tamaño de Fabricación</h1>
-            <p id="size-label">20.0 cm Ancho x 20.0 cm Alto</p>
-            <label for="marker-size" style="font-size: 0.75rem; opacity: 0.8; margin-top: 8px; display:block;">Tamaño de tu hoja impresa:</label>
-            <select id="marker-size" style="margin-top: 4px; border-radius: 8px; padding: 6px; background: rgba(0,0,0,0.4); color: #34D399; font-weight:bolder; font-size:0.8rem; border: 1px solid rgba(255,255,255,0.2); outline: none; cursor: pointer;">
-                <option value="20">20x20 cm (Hoja Carta regular)</option>
-                <option value="30">30x30 cm (Tabloide / Plóter)</option>
-                <option value="10">10x10 cm (Tarjeta pequeña)</option>
-            </select>
-        </div>
-
-        <!-- Botón para subir logo -->
-        <label for="logo-upload" class="upload-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Subir Logo (.png)
-        </label>
-        <input type="file" id="logo-upload" accept="image/png">
-
-        <!-- Controles de Escala -->
+        <!-- Panel Inferior Compacto -->
         <div class="glass-panel bottom-panel">
-            <label for="scale-slider">Escala Proyectada (Proporción)</label>
-            <input type="range" id="scale-slider" min="0.5" max="10" step="0.1" value="1">
+            <div class="info-row">
+                <span id="size-label">20.0 cm x 20.0 cm</span>
+                <select id="marker-size" class="compact-select">
+                    <option value="20">Tracker: 20cm</option>
+                    <option value="30">Tracker: 30cm</option>
+                    <option value="10">Tracker: 10cm</option>
+                </select>
+            </div>
+            
+            <div class="control-row">
+                <label for="scale-slider">Escala:</label>
+                <input type="range" id="scale-slider" min="0.5" max="10" step="0.1" value="1">
+            </div>
+            
+            <div class="actions-row">
+                <label for="logo-upload" class="icon-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Imagen
+                </label>
+                <input type="file" id="logo-upload" accept="image/png, image/jpeg, image/jpg, image/webp">
+
+                <button id="screenshot-btn" class="icon-btn highlight">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    Foto
+                </button>
+            </div>
         </div>
     </div>
 
@@ -45,7 +49,7 @@
     <a-scene 
         mindar-image="imageTargetSrc: ./targets.mind; filterMinCF:0.0001; filterBeta: 0.001;" 
         color-space="sRGB" 
-        renderer="colorManagement: true, physicallyCorrectLights" 
+        renderer="colorManagement: true, physicallyCorrectLights: true, preserveDrawingBuffer: true" 
         vr-mode-ui="enabled: false" 
         device-orientation-permission-ui="enabled: false">
         
@@ -55,8 +59,7 @@
         <a-entity mindar-image-target="targetIndex: 0">
             <!-- Contenedor del Logo (Aquí se aplica la escala) -->
             <a-entity id="logo-wrapper" scale="1 1 1">
-                <!-- Por defecto mostramos un plano con color, luego se reemplazará por la imagen -->
-                <a-plane id="logo-plane" width="1" height="1" color="#4F46E5" opacity="0.8" position="0 0 0.1"></a-plane>
+                <a-plane id="logo-plane" width="1" height="1" color="#4F46E5" position="0 0 0.1"></a-plane>
             </a-entity>
         </a-entity>
     </a-scene>
