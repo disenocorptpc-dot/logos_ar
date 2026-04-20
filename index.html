@@ -17,8 +17,13 @@
         <!-- Calculadora de Tamaño -->
         <div class="glass-panel top-panel">
             <h1>Tamaño de Fabricación</h1>
-            <p id="size-label">10.0 cm Ancho x 10.0 cm Alto</p>
-            <small>Basado en un QR/Marcador de 10x10 cm</small>
+            <p id="size-label">20.0 cm Ancho x 20.0 cm Alto</p>
+            <label for="marker-size" style="font-size: 0.75rem; opacity: 0.8; margin-top: 8px; display:block;">Tamaño de tu hoja impresa:</label>
+            <select id="marker-size" style="margin-top: 4px; border-radius: 8px; padding: 6px; background: rgba(0,0,0,0.4); color: #34D399; font-weight:bolder; font-size:0.8rem; border: 1px solid rgba(255,255,255,0.2); outline: none; cursor: pointer;">
+                <option value="20">20x20 cm (Hoja Carta regular)</option>
+                <option value="30">30x30 cm (Tabloide / Plóter)</option>
+                <option value="10">10x10 cm (Tarjeta pequeña)</option>
+            </select>
         </div>
 
         <!-- Botón para subir logo -->

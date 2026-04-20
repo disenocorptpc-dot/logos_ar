@@ -9,9 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoPlane = document.getElementById('logo-plane');
 
     // --- Variables de Estado ---
-    // El marcador QR físico mide 20cm x 20cm en la vida real.
-    // MindAR mapea 1 unidad de A-Frame al ancho del marcador.
-    const MARKER_REAL_WIDTH_CM = 20.0; 
+    const markerSizeSelect = document.getElementById('marker-size');
     
     // Proporciones iniciales del objeto (A-Frame units)
     let currentPlaneWidth = 1.0;
@@ -28,10 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
         // Aplicamos la escala al Wrapper 3D
         logoWrapper.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
         
-        // Calculamos los cm reales: 
+        // Calculamos los cm reales basándonos en el dropdown seleccionado
+        const currentMarkerRealWidth = parseFloat(markerSizeSelect.value);
+        
         // Lado Real (cm) = Lado Virtual (unidades) * Escala del Wrapper * Tamaño Real del Marcador (cm)
-        const realWidthCm = (currentPlaneWidth * currentScale * MARKER_REAL_WIDTH_CM).toFixed(1);
-        const realHeightCm = (currentPlaneHeight * currentScale * MARKER_REAL_WIDTH_CM).toFixed(1);
+        const realWidthCm = (currentPlaneWidth * currentScale * currentMarkerRealWidth).toFixed(1);
+        const realHeightCm = (currentPlaneHeight * currentScale * currentMarkerRealWidth).toFixed(1);
         
         // Actualizamos UI
         sizeLabel.textContent = `${realWidthCm} cm Ancho x ${realHeightCm} cm Alto`;
@@ -86,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Listeners de Interacción ---
     scaleSlider.addEventListener('input', updateRealWorldDimensions);
+    markerSizeSelect.addEventListener('change', updateRealWorldDimensions);
 
     // Init
     updateRealWorldDimensions();
