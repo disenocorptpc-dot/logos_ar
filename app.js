@@ -72,7 +72,37 @@ document.addEventListener("DOMContentLoaded", () => {
         const realHeightCm = (currentPlaneHeight * currentScale * currentMarkerRealWidth).toFixed(1);
         
         // Actualizamos UI
-        sizeLabel.textContent = `${realWidthCm} cm Ancho x ${realHeightCm} cm Alto`;
+        sizeLabel.textContent = `${realWidthCm} cm x ${realHeightCm} cm`;
+
+        // --- Actualizamos las "Cotas" (Líneas 3D) ---
+        const actualWidthUnits = currentPlaneWidth * currentScale;
+        const actualHeightUnits = currentPlaneHeight * currentScale;
+
+        const cotaBottomLine = document.getElementById('cota-bottom-line');
+        const cotaBottomText = document.getElementById('cota-bottom-text');
+        const cotaRightLine = document.getElementById('cota-right-line');
+        const cotaRightText = document.getElementById('cota-right-text');
+
+        if (cotaBottomLine && cotaRightLine) {
+            // Línea y texto inferior (Ancho)
+            cotaBottomLine.setAttribute('geometry', `primitive: plane; width: ${actualWidthUnits}; height: 0.015`);
+            cotaBottomLine.setAttribute('position', `0 ${-actualHeightUnits/2 - 0.05} 0.11`);
+            
+            cotaBottomText.setAttribute('value', `${realWidthCm} cm`);
+            cotaBottomText.setAttribute('position', `0 ${-actualHeightUnits/2 - 0.12} 0.12`);
+            
+            // La tipografía AR debe escalar junto con el objeto para ser visible, o mantenerse pequeña. 
+            // La mantendremos con un ancho de texto proporcional:
+            cotaBottomText.setAttribute('width', Math.max(1.2, actualWidthUnits));
+
+            // Línea y texto lateral (Alto)
+            cotaRightLine.setAttribute('geometry', `primitive: plane; width: 0.015; height: ${actualHeightUnits}`);
+            cotaRightLine.setAttribute('position', `${actualWidthUnits/2 + 0.05} 0 0.11`);
+            
+            cotaRightText.setAttribute('value', `${realHeightCm} cm`);
+            cotaRightText.setAttribute('position', `${actualWidthUnits/2 + 0.12} 0 0.12`);
+            cotaRightText.setAttribute('width', Math.max(1.2, actualHeightUnits));
+        }
     }
 
     /**

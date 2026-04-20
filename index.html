@@ -63,10 +63,19 @@
         
         <!-- Target tracker -->
         <a-entity mindar-image-target="targetIndex: 0">
-            <!-- Contenedor del Logo (Aquí se aplica la escala) -->
+            <!-- Contenedor del Logo -->
             <a-entity id="logo-wrapper" scale="1 1 1">
                 <a-plane id="logo-plane" width="1" height="1" color="#4F46E5" position="0 0 0.1"></a-plane>
             </a-entity>
+
+            <!-- Cotas de Medición (Dimension lines) -->
+            <!-- Cota Ancho (Inferior) -->
+            <a-entity id="cota-bottom-line" geometry="primitive: plane; height: 0.015; width: 1" material="color: #34D399; shader: flat" position="0 -0.55 0.11"></a-entity>
+            <a-text id="cota-bottom-text" value="20 cm" color="#34D399" align="center" wrap-count="15" width="1.2" position="0 -0.65 0.12"></a-text>
+
+            <!-- Cota Alto (Derecha) -->
+            <a-entity id="cota-right-line" geometry="primitive: plane; width: 0.015; height: 1" material="color: #34D399; shader: flat" position="0.55 0 0.11"></a-entity>
+            <a-text id="cota-right-text" value="20 cm" color="#34D399" align="center" wrap-count="15" width="1.2" position="0.65 0 0.12" rotation="0 0 90"></a-text>
         </a-entity>
     </a-scene>
 
