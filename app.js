@@ -9,9 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoPlane = document.getElementById('logo-plane');
 
     // --- Variables de Estado ---
-    // El marcador QR físico mide 10cm x 10cm en la vida real.
+    // El marcador QR físico mide 20cm x 20cm en la vida real.
     // MindAR mapea 1 unidad de A-Frame al ancho del marcador.
-    const MARKER_REAL_WIDTH_CM = 10.0; 
+    const MARKER_REAL_WIDTH_CM = 20.0; 
     
     // Proporciones iniciales del objeto (A-Frame units)
     let currentPlaneWidth = 1.0;
