@@ -78,30 +78,32 @@ document.addEventListener("DOMContentLoaded", () => {
         const actualWidthUnits = currentPlaneWidth * currentScale;
         const actualHeightUnits = currentPlaneHeight * currentScale;
 
+        // Factor de multiplicación para mantener proporciones en A-Frame
+        const lineOffset = 0.05 * currentScale;
+        const textOffset = 0.15 * currentScale;
+        const lineThickness = 0.015 * currentScale;
+
         const cotaBottomLine = document.getElementById('cota-bottom-line');
         const cotaBottomText = document.getElementById('cota-bottom-text');
         const cotaRightLine = document.getElementById('cota-right-line');
         const cotaRightText = document.getElementById('cota-right-text');
 
         if (cotaBottomLine && cotaRightLine) {
-            // Línea y texto inferior (Ancho)
-            cotaBottomLine.setAttribute('geometry', `primitive: plane; width: ${actualWidthUnits}; height: 0.015`);
-            cotaBottomLine.setAttribute('position', `0 ${-actualHeightUnits/2 - 0.05} 0.11`);
+            // Línea inferior (Ancho)
+            cotaBottomLine.setAttribute('geometry', `primitive: plane; width: ${actualWidthUnits}; height: ${lineThickness}`);
+            cotaBottomLine.setAttribute('position', `0 ${-(actualHeightUnits/2) - lineOffset} 0.11`);
             
             cotaBottomText.setAttribute('value', `${realWidthCm} cm`);
-            cotaBottomText.setAttribute('position', `0 ${-actualHeightUnits/2 - 0.12} 0.12`);
-            
-            // La tipografía AR debe escalar junto con el objeto para ser visible, o mantenerse pequeña. 
-            // La mantendremos con un ancho de texto proporcional:
-            cotaBottomText.setAttribute('width', Math.max(1.2, actualWidthUnits));
+            cotaBottomText.setAttribute('position', `0 ${-(actualHeightUnits/2) - textOffset} 0.12`);
+            cotaBottomText.setAttribute('scale', `${currentScale} ${currentScale} 1`);
 
-            // Línea y texto lateral (Alto)
-            cotaRightLine.setAttribute('geometry', `primitive: plane; width: 0.015; height: ${actualHeightUnits}`);
-            cotaRightLine.setAttribute('position', `${actualWidthUnits/2 + 0.05} 0 0.11`);
+            // Línea lateral derecha (Alto)
+            cotaRightLine.setAttribute('geometry', `primitive: plane; width: ${lineThickness}; height: ${actualHeightUnits}`);
+            cotaRightLine.setAttribute('position', `${(actualWidthUnits/2) + lineOffset} 0 0.11`);
             
             cotaRightText.setAttribute('value', `${realHeightCm} cm`);
-            cotaRightText.setAttribute('position', `${actualWidthUnits/2 + 0.12} 0 0.12`);
-            cotaRightText.setAttribute('width', Math.max(1.2, actualHeightUnits));
+            cotaRightText.setAttribute('position', `${(actualWidthUnits/2) + textOffset} 0 0.12`);
+            cotaRightText.setAttribute('scale', `${currentScale} ${currentScale} 1`);
         }
     }
 
