@@ -107,41 +107,53 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function loadImageFromUrl(url) {
+        currentUploadedImageObj = new Image();
+        currentUploadedImageObj.onload = () => {
+            const imgWidth = currentUploadedImageObj.width;
+            const imgHeight = currentUploadedImageObj.height;
+            const aspect = imgWidth / imgHeight;
+
+            if (imgWidth >= imgHeight) {
+                currentPlaneWidth = 1.0;
+                currentPlaneHeight = 1.0 / aspect;
+            } else {
+                currentPlaneHeight = 1.0;
+                currentPlaneWidth = aspect;
+            }
+
+            logoPlane.setAttribute('width', currentPlaneWidth);
+            logoPlane.setAttribute('height', currentPlaneHeight);
+            logoPlane.removeAttribute('color');
+            
+            processAndApplyImage();
+            updateRealWorldDimensions();
+        };
+        currentUploadedImageObj.src = url;
+    }
+
+    const exampleLogosSelect = document.getElementById('example-logos');
+    if (exampleLogosSelect) {
+        exampleLogosSelect.addEventListener('change', (e) => {
+            if (e.target.value) {
+                loadImageFromUrl(e.target.value);
+            }
+        });
+    }
+
     /**
      * Maneja la subida del logotipo.
      */
     logoUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        
+        // Reiniciar el select de ejemplos
+        if (exampleLogosSelect) exampleLogosSelect.value = "";
 
         const reader = new FileReader();
         reader.onload = (event) => {
-            const imgDataUrl = event.target.result;
-            
-            currentUploadedImageObj = new Image();
-            currentUploadedImageObj.onload = () => {
-                const imgWidth = currentUploadedImageObj.width;
-                const imgHeight = currentUploadedImageObj.height;
-                const aspect = imgWidth / imgHeight;
-
-                // Normalizamos para que el lado más largo mida 1 unidad en A-Frame
-                if (imgWidth >= imgHeight) {
-                    currentPlaneWidth = 1.0;
-                    currentPlaneHeight = 1.0 / aspect;
-                } else {
-                    currentPlaneHeight = 1.0;
-                    currentPlaneWidth = aspect;
-                }
-
-                // Ajustar las dimensiones del plano en A-Frame
-                logoPlane.setAttribute('width', currentPlaneWidth);
-                logoPlane.setAttribute('height', currentPlaneHeight);
-                logoPlane.removeAttribute('color');
-                
-                processAndApplyImage();
-                updateRealWorldDimensions();
-            };
-            currentUploadedImageObj.src = imgDataUrl;
+            loadImageFromUrl(event.target.result);
         };
         reader.readAsDataURL(file);
     });

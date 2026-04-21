@@ -17,5 +17,12 @@
   "bugs": {
     "url": "https://github.com/disenocorptpc-dot/logos_ar/issues"
   },
-  "homepage": "https://github.com/disenocorptpc-dot/logos_ar#readme"
+  "homepage": "https://github.com/disenocorptpc-dot/logos_ar#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/core": "^8.3.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.3.1"
+  }
 }
