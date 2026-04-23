@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba LightGlue - Hugging Face</title>
+    <style>
+        body { background-color: #0d1117; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        #video-container { position: relative; display: inline-block; margin-top: 20px; }
+        video { border-radius: 8px; border: 2px solid #30363d; width: 100%; max-width: 400px; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .btn { background: #00f2ff; color: black; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 15px;}
+        #status { margin-top: 10px; font-size: 14px; color: #8b949e; }
+    </style>
+</head>
+<body>
+    <h2>Test de Tracking Neuronal (LightGlue)</h2>
+    <p>Esta es una prueba base para inicializar <b>transformers.js</b> en el navegador y extraer puntos de alto contraste sin usar MindAR.</p>
+    
+    <div id="video-container">
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="overlay"></canvas>
+    </div>
+    <br>
+    <button id="start-btn" class="btn">Inicializar Modelo IA</button>
+    <div id="status">Esperando...</div>
+
+    <script type="module">
+        // Importamos la última versión alpha de transformers.js (v3) que soporta modelos avanzados de visión
+        import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0-alpha.19';
+
+        // Evitar problemas de CORS usando el mirror de la comunidad si es necesario (como vimos en tu configuración local)
+        // env.allowLocalModels = false;
+
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('overlay');
+        const ctx = canvas.getContext('2d');
+        const statusEl = document.getElementById('status');
+        const btn = document.getElementById('start-btn');
+
+        // Configurar cámara
+        async function setupCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+                return new Promise((resolve) => {
+                    video.onloadedmetadata = () => {
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        resolve(video);
+                    };
+                });
+            } catch (e) {
+                statusEl.innerText = "Error accediendo a la cámara.";
+                console.error(e);
+            }
+        }
+
+        btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            statusEl.innerText = "Descargando modelo neuronal de Hugging Face (puede tardar la primera vez)...";
+            
+            try {
+                // Instanciar el pipeline de extracción de características (SuperPoint/LightGlue placeholder)
+                // Usamos un modelo ligero de feature-extraction para probar que el engine funciona
+                const extractor = await pipeline('feature-extraction', 'Xenova/vit-base-patch16-224-in21k');
+                
+                statusEl.innerText = "Modelo cargado. Listo para extraer features.";
+                
+                // Función de tracking (Mockup/Prueba para ver el loop de video procesado por IA)
+                async function trackLoop() {
+                    // Aquí es donde entraría LightGlue completo para hacer matching
+                    // Por ahora dibujamos un punto rojo falso para demostrar el loop sobre el canvas del video
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "rgba(0, 242, 255, 0.5)";
+                    
+                    // Solo como demo visual:
+                    const randomX = Math.random() * canvas.width;
+                    const randomY = Math.random() * canvas.height;
+                    ctx.beginPath();
+                    ctx.arc(randomX, randomY, 5, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    requestAnimationFrame(trackLoop);
+                }
+                
+                trackLoop();
+
+            } catch (error) {
+                statusEl.innerText = "Error cargando el modelo: " + error.message;
+                console.error(error);
+            }
+        });
+
+        // Iniciar cámara al cargar
+        setupCamera();
+    </script>
+</body>
+</html>
