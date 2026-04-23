@@ -29,8 +29,7 @@
         // Importamos la última versión alpha de transformers.js (v3) que soporta modelos avanzados de visión
         import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0-alpha.19';
 
-        // Usamos un proxy reverso de Cloudflare para matar dos pájaros de un tiro: Firewall y CORS
-        env.remoteHost = window.location.origin + '/hf-proxy/';
+        // Usar configuración por defecto de Hugging Face
         // env.allowLocalModels = false;
 
         const video = document.getElementById('webcam');
